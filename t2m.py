@@ -7,6 +7,8 @@ import datetime
 import json
 import logging
 
+import os
+
 if os.path.exists('/vagrant'):
     logfilename = '/vagrant/.t2m.log'
 else:
