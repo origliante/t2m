@@ -26,6 +26,8 @@ DEBUG = True
 def main():
     if len(sys.argv) < 2:
         usage()
+
+    server()
     try:
         server()
     except Exception, e:
@@ -55,17 +57,15 @@ def parse_data(data):
     """
     dtobj = None
     msg = None
-    if ']' not in data:
-        return dtobj, msg
-    try:
-        dts, msg = data.split(']')
-        dts = dts.strip('[')
-        if msg[0] != ' ':
-            return dtobj, msg
-        msg = msg[1:]
-        dtobj = s_to_datetime(dts)
-    except ValueError:
-        pass
+    if ']' in data:
+        try:
+            dts, msg = data.split(']')
+            dts = dts.strip('[')
+            if msg and msg[0] == ' ':
+                msg = msg[1:]
+                dtobj = s_to_datetime(dts)
+        except ValueError:
+            pass
     return dtobj, msg
 
 
@@ -85,7 +85,7 @@ def server():
         if dt and msg:
             #send data back
             datadict = {
-                "timestamp": (dt - datetime.datetime(1970,1,1)).total_seconds(),
+                "timestamp": int( (dt - datetime.datetime(1970,1,1)).total_seconds() ),
                 "message": msg
             }
             jsondata = json.dumps(datadict)
